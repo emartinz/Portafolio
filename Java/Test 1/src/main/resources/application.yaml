@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: t1
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?createDatabaseIfNotExist=true&useUnicode=true&character_set_server=utf8mb4
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  config:
+    import: optional:file:.env[.properties]
+    custom:
+      database:
+        execute-fill-elements: true
+        create-fill-table-schema-location: /archivos/tmp_llenar_campos.sql
+        create-fill-sp-location: /archivos/SP_InsertarDatosDesdeTMP.sql
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+# Swagger 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
