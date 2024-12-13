@@ -21,7 +21,7 @@ import com.test.t1.domain.model.entity.VersionCompany;
 import java.util.Optional;
 import java.util.Arrays;
 
-public class CompanyServiceTest {
+class CompanyServiceTest {
 
     @Mock
     private CompanyRepository companyRepository;
@@ -38,7 +38,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    public void testGetCompanyDetailsByCodigo_Found() {
+    void testGetCompanyDetailsByCodigo_Found() {
         // Arrange
         Company mockCompany = new Company();
         mockCompany.setId(1);
@@ -72,7 +72,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    public void testGetCompanyDetailsByCodigo_NotFound() {
+    void testGetCompanyDetailsByCodigo_NotFound() {
         // Arrange
         when(companyRepository.findByCode("COMP001")).thenReturn(Optional.empty());
 

@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.test.t2.domain.core.SesEmailService;
 import com.test.t2.domain.core.SnsService;
+import com.test.t2.domain.exception.InsufficientAmountException;
+import com.test.t2.domain.exception.InsufficientBalanceException;
+import com.test.t2.domain.exception.InvalidInvestmentAmountException;
 import com.test.t2.domain.model.entities.Fund;
 import com.test.t2.domain.model.entities.Transaction;
 import com.test.t2.domain.model.entities.User;
@@ -50,7 +53,7 @@ public class FundService {
     public void subscribeToFund(String userId, String fundId, double investmentAmount) {
         // Verifica si el usuario tiene saldo suficiente para suscribirse al fondo
         if (investmentAmount <= 0) {
-            throw new RuntimeException("El monto a invertir no puede ser igual o inferior a cero.");
+            throw new InvalidInvestmentAmountException();
         }
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
@@ -58,12 +61,12 @@ public class FundService {
 
         // Verifica si el usuario tiene saldo suficiente para suscribirse al fondo
         if (investmentAmount < fund.getMinimumAmount()) {
-            throw new RuntimeException("El monto ingresado no es suficiente para vincularse al fondo " + fund.getName() + ". Monto minimo: " + fund.getMinimumAmount());
+            throw new InsufficientAmountException(fund.getName(), fund.getMinimumAmount());
         }
 
         // Verifica si el usuario tiene saldo suficiente para invertir el monto especificado
         if (user.getBalance() < investmentAmount) {
-            throw new RuntimeException("No tiene saldo disponible para vincularse al fondo " + fund.getName());
+            throw new InsufficientBalanceException(fund.getName());
         }
         
         // Actualiza el saldo del usuario y guarda la transacción
@@ -145,7 +148,7 @@ public class FundService {
      * @param message
      */
     private void sendEmail(String email, String subject,  String message) {
-        logger.info("Enviando correo a " + email + ": " + message);
+        logger.info("Enviando correo a {}: {}", email, message);
         sesEmailService.sendEmail(email, subject, message);
     }
 
@@ -155,7 +158,7 @@ public class FundService {
      * @param message
      */
     private void sendSms(String phoneNumber, String message) {
-        logger.info("Enviando SMS a " + phoneNumber + ": " + message);
+        logger.info("Enviando SMS a {}: {}", phoneNumber, message);
         snsService.sendSms(phoneNumber, message);
     }
 }
